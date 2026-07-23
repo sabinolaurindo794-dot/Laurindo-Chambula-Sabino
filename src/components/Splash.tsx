@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Trophy, Play } from 'lucide-react';
+import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
 
 interface SplashProps {
   onStart: () => void;
@@ -16,7 +17,7 @@ export const Splash: React.FC<SplashProps> = ({ onStart, onShowRanking }) => {
         transition={{ duration: 0.6 }}
         className="mb-2"
       >
-        <h1 className="font-syne text-7xl font-extrabold tracking-tight bg-gradient-to-br from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-none">
+        <h1 className="font-syne text-6xl font-extrabold tracking-tight bg-gradient-to-br from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-none">
           LAU
         </h1>
         <p className="text-xs uppercase tracking-[0.25em] text-[#a78bca] font-medium mt-2">
@@ -24,17 +25,19 @@ export const Splash: React.FC<SplashProps> = ({ onStart, onShowRanking }) => {
         </p>
       </motion.div>
 
-      {/* Orb Visual */}
+      {/* Game Icon Badge */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-44 h-44 rounded-full my-10 bg-[radial-gradient(circle_at_40%_35%,#c084fc,#7c3aed_60%,#1a0533)] shadow-[0_0_80px_rgba(192,132,252,0.4)] animate-pulse-glow flex items-center justify-center relative overflow-hidden"
+        className="w-44 h-44 rounded-3xl my-8 bg-[#1a0533] p-2 border-2 border-[#c084fc]/40 shadow-[0_0_60px_rgba(192,132,252,0.4)] relative overflow-hidden flex items-center justify-center group"
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a0533]/40 to-transparent pointer-events-none" />
-        <span className="font-syne text-5xl font-extrabold text-white/90 drop-shadow-md">
-          LQ
-        </span>
+        <img
+          src={gameIcon}
+          alt="LauQuiz Ícone"
+          className="w-full h-full object-cover rounded-2xl shadow-inner group-hover:scale-105 transition-transform duration-300"
+          referrerPolicy="no-referrer"
+        />
       </motion.div>
 
       {/* Action Buttons */}

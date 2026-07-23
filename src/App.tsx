@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import { CategoryId, GameMode, Question, ScreenId, UserDatabase } from './types';
 import { AVATARS, getRandomQuestions } from './data/questions';
 import { Splash } from './components/Splash';
@@ -243,7 +242,6 @@ export default function App() {
         activeScreen={activeScreen}
         onNavigate={(screen) => setActiveScreen(screen)}
       />
-      <Analytics />
     </div>
   );
 }

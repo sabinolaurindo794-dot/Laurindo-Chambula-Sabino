@@ -4,6 +4,7 @@ import { Edit2, Sparkles, Target, Timer, Users, Database, LogIn, LogOut, CheckCi
 import { CategoryId, GameMode, UserProfile } from '../types';
 import { AVATARS, CATEGORIES } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
+import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
 
 interface HomeProps {
   currentUser: string;
@@ -40,7 +41,31 @@ export const Home: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="flex flex-col min-h-screen px-5 pt-6 pb-28 max-w-md mx-auto w-full relative z-10">
+    <div className="flex flex-col min-h-screen px-5 pt-5 pb-28 max-w-md mx-auto w-full relative z-10">
+      {/* Game Branding Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3 mb-4"
+      >
+        <div className="w-12 h-12 rounded-2xl bg-[#1a0533] p-1 border border-[#c084fc]/30 shadow-md shrink-0">
+          <img
+            src={gameIcon}
+            alt="LauQuiz Icon"
+            className="w-full h-full object-cover rounded-xl"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div>
+          <h1 className="font-syne text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-tight">
+            LauQuiz
+          </h1>
+          <p className="text-[11px] text-[#a78bca] font-medium">
+            O jogo de perguntas e cultura geral
+          </p>
+        </div>
+      </motion.div>
+
       {/* DB & Auth Status Card */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
