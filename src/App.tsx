@@ -9,6 +9,7 @@ import { Result } from './components/Result';
 import { Ranking } from './components/Ranking';
 import { NavBar } from './components/NavBar';
 import { useAuth } from './context/AuthContext';
+import { useOnline } from './context/OnlineContext';
 
 const STORAGE_USERS_KEY = 'lauquiz_users';
 const STORAGE_CURRENT_KEY = 'lauquiz_current';
@@ -20,7 +21,8 @@ const INITIAL_DEMO_USERS: UserDatabase = {
 };
 
 export default function App() {
-  const { saveGameToDatabase } = useAuth();
+  const { token, saveGameToDatabase } = useAuth();
+  const { isOnline, queueOfflineGame, syncPendingGames } = useOnline();
   const [users, setUsers] = useState<UserDatabase>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_USERS_KEY);
@@ -53,6 +55,13 @@ export default function App() {
     wrong: 0,
     points: 0,
   });
+
+  // Auto-sync pending games when coming online or token is available
+  useEffect(() => {
+    if (isOnline && token) {
+      syncPendingGames(token);
+    }
+  }, [isOnline, token]);
 
   // Ensure current user profile exists in database
   useEffect(() => {
@@ -128,19 +137,29 @@ export default function App() {
   };
 
   // Quiz completed
-  const handleFinishQuiz = (stats: { correct: number; wrong: number; points: number }) => {
+  const handleFinishQuiz = async (stats: { correct: number; wrong: number; points: number }) => {
     setLastStats(stats);
 
-    // Save to PostgreSQL if logged in
-    saveGameToDatabase({
+    const gamePayload = {
       category: selectedCat,
       score: stats.points,
       totalQuestions: activeQuestions.length || 10,
       correctAnswers: stats.correct,
       timeSpentSeconds: 60,
-    });
+    };
 
-    // Update user profile
+    // Attempt online sync to PostgreSQL if connected
+    let savedSuccessfully = false;
+    if (isOnline && token) {
+      savedSuccessfully = await saveGameToDatabase(gamePayload);
+    }
+
+    // If offline or save failed, queue game locally
+    if (!savedSuccessfully) {
+      queueOfflineGame(gamePayload);
+    }
+
+    // Update user profile locally
     const currentProfile = users[currentUser] || {
       av: '🦁',
       points: 0,

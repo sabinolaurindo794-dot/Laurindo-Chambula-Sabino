@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Edit2, Sparkles, Target, Timer, Users, Database, LogIn, LogOut, CheckCircle2 } from 'lucide-react';
+import { Edit2, Sparkles, Target, Timer, Users, Database, LogIn, LogOut, CheckCircle2, Wifi, WifiOff, RefreshCw, Download } from 'lucide-react';
 import { CategoryId, GameMode, UserProfile } from '../types';
 import { AVATARS, CATEGORIES } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
+import { useOnline } from '../context/OnlineContext';
 import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
 
 interface HomeProps {
@@ -30,7 +31,35 @@ export const Home: React.FC<HomeProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState(currentUser);
   const [tempAvatar, setTempAvatar] = useState(userProfile.av);
-  const { user, loginWithGoogle, logout } = useAuth();
+  const { user, token, loginWithGoogle, logout } = useAuth();
+  const { isOnline, pendingGamesCount, syncPendingGames } = useOnline();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
+
+  const handleManualSync = async () => {
+    if (!token) return;
+    setIsSyncing(true);
+    await syncPendingGames(token);
+    setIsSyncing(false);
+  };
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,15 +85,86 @@ export const Home: React.FC<HomeProps> = ({
             referrerPolicy="no-referrer"
           />
         </div>
-        <div>
-          <h1 className="font-syne text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-tight">
-            LauQuiz
-          </h1>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h1 className="font-syne text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-tight">
+              LauQuiz
+            </h1>
+            {/* Online/Offline Status Badge */}
+            <span
+              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 shadow-sm ${
+                isOnline
+                  ? 'bg-[#10b981]/20 text-[#34d399] border border-[#10b981]/40'
+                  : 'bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/40 animate-pulse'
+              }`}
+            >
+              {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
+              {isOnline ? 'Online' : 'Offline'}
+            </span>
+          </div>
           <p className="text-[11px] text-[#a78bca] font-medium">
-            O jogo de perguntas e cultura geral
+            {isOnline ? 'Conectado · Jogue e sincronize na nuvem' : 'Modo Offline Ativo · Jogo 100% funcional'}
           </p>
         </div>
       </motion.div>
+
+      {/* Online / Offline Sync Banner */}
+      {!isOnline && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="p-3 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-2xl mb-4 text-xs text-[#fef08a] flex items-center gap-2.5"
+        >
+          <WifiOff size={18} className="shrink-0 text-[#fbbf24]" />
+          <div>
+            <span className="font-bold block text-[#fbbf24]">A jogar sem internet</span>
+            <span>Seus pontos e progresso serão guardados no telemóvel e sincronizados assim que voltar online!</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Pending Sync Bar */}
+      {isOnline && pendingGamesCount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="p-3 bg-[#c084fc]/10 border border-[#c084fc]/30 rounded-2xl mb-4 text-xs text-[#f5f0ff] flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <RefreshCw size={16} className={`text-[#c084fc] ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>
+              <strong>{pendingGamesCount}</strong> partida(s) guardadas offline
+            </span>
+          </div>
+          <button
+            onClick={handleManualSync}
+            disabled={isSyncing || !token}
+            className="px-2.5 py-1 rounded-lg bg-[#c084fc] hover:bg-[#a855f7] text-white font-semibold text-[11px] disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            {isSyncing ? 'A sincronizar...' : 'Sincronizar'}
+          </button>
+        </motion.div>
+      )}
+
+      {/* PWA Install Banner */}
+      {deferredPrompt && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3 bg-[#7c3aed]/20 border border-[#c084fc]/40 rounded-2xl mb-4 flex items-center justify-between shadow-md"
+        >
+          <div className="flex items-center gap-2 text-xs text-[#f5f0ff]">
+            <Download size={16} className="text-[#c084fc]" />
+            <span>Instalar LauQuiz no ecrã principal</span>
+          </div>
+          <button
+            onClick={handleInstallPWA}
+            className="px-3 py-1 rounded-xl bg-gradient-to-r from-[#c084fc] to-[#7c3aed] text-white text-xs font-bold shadow-sm cursor-pointer hover:brightness-110"
+          >
+            Instalar
+          </button>
+        </motion.div>
+      )}
 
       {/* DB & Auth Status Card */}
       <motion.div
