@@ -30,12 +30,12 @@ export const Splash: React.FC<SplashProps> = ({ onStart, onShowRanking }) => {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-44 h-44 rounded-3xl my-8 bg-[#1a0533] p-2 border-2 border-[#c084fc]/40 shadow-[0_0_60px_rgba(192,132,252,0.4)] relative overflow-hidden flex items-center justify-center group"
+        className="w-32 h-32 rounded-2xl my-6 bg-[#1a0533] p-1.5 border-2 border-[#c084fc]/40 shadow-[0_0_40px_rgba(192,132,252,0.35)] relative overflow-hidden flex items-center justify-center group"
       >
         <img
           src={gameIcon}
           alt="LauQuiz Ícone"
-          className="w-full h-full object-cover rounded-2xl shadow-inner group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover rounded-xl shadow-inner group-hover:scale-105 transition-transform duration-300"
           referrerPolicy="no-referrer"
         />
       </motion.div>
@@ -45,21 +45,21 @@ export const Splash: React.FC<SplashProps> = ({ onStart, onShowRanking }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="w-full max-w-xs space-y-3"
+        className="w-full max-w-xs space-y-2.5"
       >
         <button
           onClick={onStart}
-          className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#c084fc] to-[#7c3aed] text-white font-syne font-bold text-base shadow-lg shadow-[#7c3aed]/30 hover:brightness-110 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-[#c084fc] to-[#7c3aed] text-white font-syne font-bold text-sm shadow-lg shadow-[#7c3aed]/30 hover:brightness-110 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
         >
-          <Play size={18} fill="currentColor" />
+          <Play size={16} fill="currentColor" />
           <span>Jogar Agora</span>
         </button>
 
         <button
           onClick={onShowRanking}
-          className="w-full py-3.5 px-6 rounded-2xl border border-[#c084fc]/30 bg-[#1a0533]/50 hover:bg-[#1a0533] text-[#c084fc] font-dmsans font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+          className="w-full py-2.5 px-5 rounded-xl border border-[#c084fc]/30 bg-[#1a0533]/50 hover:bg-[#1a0533] text-[#c084fc] font-dmsans font-medium text-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
         >
-          <Trophy size={16} />
+          <Trophy size={15} />
           <span>Ver Ranking Global</span>
         </button>
       </motion.div>
