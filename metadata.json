@@ -1,0 +1,6 @@
+{
+  "name": "Lau Quiz",
+  "description": "Aplicativo de Quiz interativo com categorias de Filosofia, Ciências, Antropologia e História, modos Solo, Temporizado e Multijogador, ranking e estatísticas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
