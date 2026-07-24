@@ -1,4 +1,28 @@
-export type CategoryId = 'todas' | 'filosofia' | 'ciencias' | 'antropologia' | 'historia' | 'tecnologia' | 'comunicacao' | 'economia' | 'medicina';
+export type CategoryId =
+  | 'todas'
+  | 'filosofia'
+  | 'ciencias'
+  | 'antropologia'
+  | 'historia'
+  | 'tecnologia'
+  | 'comunicacao'
+  | 'economia'
+  | 'medicina'
+  | 'fisica'
+  | 'quimica'
+  | 'portugues'
+  | 'mecanica'
+  | 'programacao'
+  | 'matematica'
+  | 'direito'
+  | 'financas'
+  | 'sociologia'
+  | 'opiniao_publica'
+  | 'politica'
+  | 'geografia'
+  | 'saude'
+  | 'contabilidade'
+  | 'informatica';
 export type GameMode = 'solo' | 'timer' | 'multi';
 export type ScreenId = 'splash' | 'home' | 'quiz' | 'multi-lobby' | 'result' | 'ranking';
 

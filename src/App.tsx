@@ -47,6 +47,7 @@ export default function App() {
   const [activeScreen, setActiveScreen] = useState<ScreenId>('splash');
   const [selectedCat, setSelectedCat] = useState<CategoryId>('todas');
   const [selectedMode, setSelectedMode] = useState<GameMode>('solo');
+  const [questionCount, setQuestionCount] = useState<number>(10);
 
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [opponentName, setOpponentName] = useState<string>('Adversário');
@@ -122,7 +123,7 @@ export default function App() {
     if (selectedMode === 'multi') {
       setActiveScreen('multi-lobby');
     } else {
-      const qList = getRandomQuestions(selectedCat, 10);
+      const qList = getRandomQuestions(selectedCat, questionCount);
       setActiveQuestions(qList);
       setActiveScreen('quiz');
     }
@@ -131,7 +132,7 @@ export default function App() {
   // Start multiplayer quiz from lobby
   const handleStartMultiGame = (oppName: string) => {
     setOpponentName(oppName);
-    const qList = getRandomQuestions(selectedCat, 10);
+    const qList = getRandomQuestions(selectedCat, questionCount);
     setActiveQuestions(qList);
     setActiveScreen('quiz');
   };
@@ -211,8 +212,10 @@ export default function App() {
           userProfile={currentUserProfile}
           selectedCat={selectedCat}
           selectedMode={selectedMode}
+          questionCount={questionCount}
           onSelectCat={setSelectedCat}
           onSelectMode={setSelectedMode}
+          onSelectCount={setQuestionCount}
           onStartGame={handleStartGame}
           onEditProfile={handleEditProfile}
         />
