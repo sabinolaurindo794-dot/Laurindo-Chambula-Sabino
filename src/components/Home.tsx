@@ -249,6 +249,55 @@ export const Home: React.FC<HomeProps> = ({
           </span>
         </div>
 
+        {/* Quick Shortcut Pills */}
+        <div className="flex items-center gap-1 shrink-0 overflow-x-auto pb-0.5 scrollbar-none text-[8.5px]">
+          <span className="text-[#a78bca] text-[8px] uppercase font-semibold shrink-0">Destaques:</span>
+          <button
+            type="button"
+            onClick={() => onSelectCat('futebol')}
+            className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
+              selectedCat === 'futebol'
+                ? 'bg-[#22c55e] text-black border-[#22c55e] shadow-sm'
+                : 'bg-[#22c55e]/20 text-[#4ade80] border-[#22c55e]/50 hover:bg-[#22c55e]/35'
+            }`}
+          >
+            ⚽ Futebol
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectCat('informatica')}
+            className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
+              selectedCat === 'informatica'
+                ? 'bg-[#38bdf8] text-black border-[#38bdf8] shadow-sm'
+                : 'bg-[#38bdf8]/20 text-[#38bdf8] border-[#38bdf8]/50 hover:bg-[#38bdf8]/35'
+            }`}
+          >
+            💻 Informática
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectCat('portugues')}
+            className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
+              selectedCat === 'portugues'
+                ? 'bg-[#c084fc] text-black border-[#c084fc] shadow-sm'
+                : 'bg-[#c084fc]/20 text-[#c084fc] border-[#c084fc]/50 hover:bg-[#c084fc]/35'
+            }`}
+          >
+            📚 Português
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectCat('todas')}
+            className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
+              selectedCat === 'todas'
+                ? 'bg-[#fbbf24] text-black border-[#fbbf24] shadow-sm'
+                : 'bg-[#fbbf24]/20 text-[#fbbf24] border-[#fbbf24]/50 hover:bg-[#fbbf24]/35'
+            }`}
+          >
+            ⚡ Todas
+          </button>
+        </div>
+
         {/* Search input for categories */}
         <div className="relative shrink-0">
           <Search size={11} className="absolute left-2 top-1.5 text-[#a78bca]" />
@@ -256,7 +305,7 @@ export const Home: React.FC<HomeProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar disciplina (ex: Física, Saúde...)"
+            placeholder="Pesquisar disciplina (ex: Futebol, Informática...)"
             className="w-full pl-6 pr-2 py-0.5 rounded-md bg-[#120324] border border-[#c084fc]/20 text-[#f5f0ff] placeholder-[#a78bca]/60 text-[9.5px] outline-none focus:border-[#c084fc]/60"
           />
         </div>

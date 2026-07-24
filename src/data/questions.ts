@@ -23,6 +23,7 @@ import { GEOGRAFIA_QUESTIONS } from './questions/geografia';
 import { SAUDE_QUESTIONS } from './questions/saude';
 import { CONTABILIDADE_QUESTIONS } from './questions/contabilidade';
 import { INFORMATICA_QUESTIONS } from './questions/informatica';
+import { FUTEBOL_QUESTIONS } from './questions/futebol';
 
 export const AVATARS = ['🦁', '🐯', '🦊', '🐺', '🦅', '🐬', '🦋', '🔮'];
 
@@ -52,6 +53,7 @@ export const CATEGORY_QUESTIONS: Record<CategoryId, Question[]> = {
   saude: expandCategoryTo200('saude', SAUDE_QUESTIONS),
   contabilidade: expandCategoryTo200('contabilidade', CONTABILIDADE_QUESTIONS),
   informatica: expandCategoryTo200('informatica', INFORMATICA_QUESTIONS),
+  futebol: expandCategoryTo200('futebol', FUTEBOL_QUESTIONS),
 };
 
 export const QUESTIONS: Question[] = Object.values(CATEGORY_QUESTIONS).flat();
@@ -81,6 +83,7 @@ export const CATEGORIES: Record<CategoryId, CategoryConfig> = {
   saude: { id: 'saude', label: 'Saúde', icon: '🏥', color: '#f87171', bg: 'rgba(248,113,113,0.15)', count: CATEGORY_QUESTIONS.saude.length },
   contabilidade: { id: 'contabilidade', label: 'Contabilidade', icon: '📊', color: '#818cf8', bg: 'rgba(129,140,248,0.15)', count: CATEGORY_QUESTIONS.contabilidade.length },
   informatica: { id: 'informatica', label: 'Informática', icon: '💻', color: '#38bdf8', bg: 'rgba(56,189,248,0.15)', count: CATEGORY_QUESTIONS.informatica.length },
+  futebol: { id: 'futebol', label: 'Futebol', icon: '⚽', color: '#22c55e', bg: 'rgba(34,197,94,0.15)', count: CATEGORY_QUESTIONS.futebol.length },
 };
 
 export function shuffleQuestionOptions(q: Question): Question {

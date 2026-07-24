@@ -22,7 +22,8 @@ export type CategoryId =
   | 'geografia'
   | 'saude'
   | 'contabilidade'
-  | 'informatica';
+  | 'informatica'
+  | 'futebol';
 export type GameMode = 'solo' | 'timer' | 'multi';
 export type ScreenId = 'splash' | 'home' | 'quiz' | 'multi-lobby' | 'result' | 'ranking';
 
