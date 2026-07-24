@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Edit2, Sparkles, Target, Timer, Users, LogIn, LogOut, Wifi, WifiOff, RefreshCw, Download, Search, BookOpen, Layers } from 'lucide-react';
+import { Edit2, Sparkles, Target, Timer, Users, LogIn, LogOut, Wifi, WifiOff, RefreshCw, Download, Search } from 'lucide-react';
 import { CategoryId, GameMode, UserProfile } from '../types';
-import { AVATARS, CATEGORIES, QUESTIONS, getCategoryQuestionStats, resetCategoryQuestionProgress } from '../data/questions';
+import { AVATARS, CATEGORIES } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import { useOnline } from '../context/OnlineContext';
 import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
@@ -36,13 +36,10 @@ export const Home: React.FC<HomeProps> = ({
   const [tempName, setTempName] = useState(currentUser);
   const [tempAvatar, setTempAvatar] = useState(userProfile.av);
   const [searchTerm, setSearchTerm] = useState('');
-  const [forceRefresh, setForceRefresh] = useState(0);
   const { user, token, loginWithGoogle, logout } = useAuth();
   const { isOnline, pendingGamesCount, syncPendingGames } = useOnline();
   const [isSyncing, setIsSyncing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-
-  const catStats = getCategoryQuestionStats(selectedCat, currentUser);
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
@@ -92,8 +89,7 @@ export const Home: React.FC<HomeProps> = ({
     return cat.label.toLowerCase().includes(searchTerm.toLowerCase().trim());
   });
 
-  const totalQuestions = QUESTIONS.length;
-  const totalDisciplines = allCategoryKeys.length - 1; // minus 'todas'
+  const totalDisciplines = allCategoryKeys.length - 1;
 
   return (
     <div className="flex flex-col h-[calc(100dvh-3.5rem)] pt-1 pb-1 px-3 max-w-md mx-auto w-full relative z-10 text-xs select-none overflow-hidden gap-1 justify-between">
@@ -155,26 +151,6 @@ export const Home: React.FC<HomeProps> = ({
           )}
         </div>
       </motion.div>
-
-      {/* Stats & Info Banner */}
-      <div className="flex items-center justify-between px-2.5 py-1 bg-gradient-to-r from-[#240847] to-[#120324] rounded-lg border border-[#c084fc]/25 shrink-0">
-        <div className="flex items-center gap-1.5 text-[10px]">
-          <BookOpen size={12} className="text-[#c084fc]" />
-          <span className="font-bold text-[#f5f0ff]">{totalQuestions}</span>
-          <span className="text-[#a78bca]">Perguntas</span>
-        </div>
-        <div className="h-3 w-[1px] bg-[#c084fc]/30" />
-        <div className="flex items-center gap-1.5 text-[10px]">
-          <Layers size={12} className="text-[#34d399]" />
-          <span className="font-bold text-[#f5f0ff]">{totalDisciplines}</span>
-          <span className="text-[#a78bca]">Disciplinas</span>
-        </div>
-        <div className="h-3 w-[1px] bg-[#c084fc]/30" />
-        <div className="flex items-center gap-1 text-[10px] text-[#fbbf24] font-medium">
-          <Sparkles size={10} />
-          <span>{userProfile.points} pts</span>
-        </div>
-      </div>
 
       {/* Profile Bar */}
       <motion.div
@@ -437,30 +413,6 @@ export const Home: React.FC<HomeProps> = ({
             <span className="text-[8.5px] font-semibold">Multiplayer</span>
           </button>
         </div>
-      </div>
-
-      {/* Non-repetition status banner */}
-      <div className="shrink-0 flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#1a0533] border border-[#34d399]/30 text-[9.5px]">
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse shrink-0" />
-          <span className="text-[#34d399] font-bold">Sem repetições ativo</span>
-          <span className="text-[#a78bca]">
-            ({catStats.seenCount}/{catStats.totalCount} respondidas)
-          </span>
-        </div>
-        {catStats.seenCount > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              resetCategoryQuestionProgress(selectedCat, currentUser);
-              setForceRefresh((prev) => prev + 1);
-            }}
-            className="text-[8.5px] text-[#c084fc] hover:underline cursor-pointer font-medium"
-            title="Reiniciar histórico de perguntas desta disciplina"
-          >
-            Reiniciar
-          </button>
-        )}
       </div>
 
       {/* Start Button */}
