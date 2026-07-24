@@ -23,7 +23,8 @@ export type CategoryId =
   | 'saude'
   | 'contabilidade'
   | 'informatica'
-  | 'futebol';
+  | 'futebol'
+  | 'historia_angola';
 export type GameMode = 'solo' | 'timer' | 'multi';
 export type ScreenId = 'splash' | 'home' | 'quiz' | 'multi-lobby' | 'result' | 'ranking';
 

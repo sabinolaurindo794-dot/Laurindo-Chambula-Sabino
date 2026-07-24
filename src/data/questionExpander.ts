@@ -109,52 +109,44 @@ const DOMAIN_TOPICS: Record<CategoryId, { topic: string; prompt: string; options
     { topic: 'Regras do Futebol', prompt: 'Em cobranças de tiro livre direto ou pênalti, o que acontece se o executor tocar na bola duas vezes seguidas antes que outro jogador a toque?', options: ['É marcado tiro livre indireto para a equipe adversária', 'O lance é repetido obrigatoriamente', 'O jogador recebe cartão vermelho direto', 'É concedido escanteio para a equipe atacante'], correct: 0, explanation: 'O toque duplo consecutivo do cobrador é punido com tiro livre indireto a favor da defesa.' },
     { topic: 'Futebol Sul-Americano', prompt: 'Qual clube é o maior vencedor da história da Copa Libertadores da América?', options: ['Independiente (Argentina)', 'Boca Juniors (Argentina)', 'Peñarol (Uruguai)', 'Flamengo (Brasil)'], correct: 0, explanation: 'O Independiente de Avellaneda é conhecido como "Rey de Copas" por ter 7 títulos da Libertadores.' },
     { topic: 'Tática e Posições', prompt: 'No esquema tático 4-3-3, a linha do meio-campo é tipicamente composta por:', options: ['Três meio-campistas (geralmente volante, segundo volante e meia armador)', 'Quatro zagueiros centrais', 'Dois alas e dois atacantes de beirada', 'Cinco líberos'], correct: 0, explanation: 'O 4-3-3 utiliza 4 defensores, 3 meio-campistas e 3 atacantes.' }
+  ],
+  historia_angola: [
+    { topic: 'Independência e Símbolos', prompt: 'Qual é a designação oficial do país adotada na Constituição de 2010?', options: ['República de Angola', 'República Popular de Angola', 'Estado de Angola', 'União Angolana'], correct: 0, explanation: 'A denominação oficial do país é República de Angola.' },
+    { topic: 'Reinos Tradicionais', prompt: 'Qual foi o importante reino centro-sul de Angola cuja resistência liderada pelo rei Ekuikui II marcou a história do planalto central (Huambo)?', options: ['Reino do Bailundo', 'Reino do Ndongo', 'Reino de Benguela', 'Reino do Congo'], correct: 0, explanation: 'O Reino do Bailundo destacou-se pela bravura e organização militar no planalto central de Angola.' },
+    { topic: 'Património Cultural e Histórico', prompt: 'Qual fortaleza emblemática situada em Luanda abriga atualmente o Museu Nacional de História Militar de Angola?', options: ['Fortaleza de São Miguel', 'Fortaleza de São Filipe de Benguela', 'Forte de Massangano', 'Forte de Cambambe'], correct: 0, explanation: 'A Fortaleza de São Miguel, construída no século XVI no morro da Segunda Posição/São Miguel, domina a baía de Luanda.' },
+    { topic: 'Luta Armada e Heróis Nacionais', prompt: 'O dia 17 de Setembro é comemorado nacionalmente em Angola como o Dia do Herói Nacional em homenagem ao nascimento de quem?', options: ['Dr. António Agostinho Neto', 'Comandante Kifangondo', 'Rainha Nzinga Mbandi', 'Deolinda Rodrigues'], correct: 0, explanation: '17 de Setembro assinala a data de nascimento do Primeiro Presidente de Angola, Dr. António Agostinho Neto.' },
+    { topic: 'Geografia Histórica e Províncias', prompt: 'Qual cidade angolana era historicamente conhecida durante o período colonial pelo nome de "Nova Lisboa"?', options: ['Huambo', 'Lubango', 'Benguela', 'Menongue'], correct: 0, explanation: 'A cidade do Huambo, segunda maior de Angola, foi fundada em 1912 e denominada Nova Lisboa até 1975.' }
   ]
 };
 
 export function expandCategoryTo200(cat: CategoryId, baseQuestions: Question[]): Question[] {
-  const targetCount = 200;
-  const result: Question[] = [...baseQuestions];
+  const seenPrompts = new Set<string>();
+  const result: Question[] = [];
 
-  const templates = DOMAIN_TOPICS[cat] || [];
-  let index = 0;
-
-  // 1. If base questions + templates need expansion to reach 200, generate clear academic questions
-  while (result.length < targetCount) {
-    if (templates.length > 0) {
-      const tmpl = templates[index % templates.length];
-      const variantNumber = Math.floor(result.length / templates.length) + 1;
-      
-      // Create a unique permutation of choices and subtle variant context to keep every question distinct and valid
-      const shift = (index + result.length) % 4;
-      const shiftedOpts = [...tmpl.options];
-      
-      // Rotate correct answer index
-      const originalCorrect = tmpl.correct;
-      const targetCorrect = (originalCorrect + shift) % 4;
-      
-      // Swap items
-      const temp = shiftedOpts[originalCorrect];
-      shiftedOpts[originalCorrect] = shiftedOpts[targetCorrect];
-      shiftedOpts[targetCorrect] = temp;
-
-      result.push({
-        cat,
-        q: `[${tmpl.topic} - Q${result.length + 1}] ${tmpl.prompt}`,
-        opts: shiftedOpts,
-        ans: targetCorrect,
-        exp: `${tmpl.explanation} (Questão do módulo ${tmpl.topic}).`
-      });
-    } else {
-      // Fallback for unexpected cases: clone with index stamp
-      const baseQ = baseQuestions[index % baseQuestions.length];
-      result.push({
-        ...baseQ,
-        q: `${baseQ.q} (Variação ${result.length + 1})`,
-      });
+  // Add base questions first
+  for (const q of baseQuestions) {
+    const trimmed = q.q.trim();
+    if (!seenPrompts.has(trimmed)) {
+      seenPrompts.add(trimmed);
+      result.push(q);
     }
-    index++;
   }
 
-  return result.slice(0, targetCount);
+  // Add domain topic questions if not already present
+  const templates = DOMAIN_TOPICS[cat] || [];
+  for (const tmpl of templates) {
+    const trimmedPrompt = tmpl.prompt.trim();
+    if (!seenPrompts.has(trimmedPrompt)) {
+      seenPrompts.add(trimmedPrompt);
+      result.push({
+        cat,
+        q: tmpl.prompt,
+        opts: tmpl.options,
+        ans: tmpl.correct,
+        exp: tmpl.explanation,
+      });
+    }
+  }
+
+  return result;
 }

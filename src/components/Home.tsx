@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Edit2, Sparkles, Target, Timer, Users, LogIn, LogOut, Wifi, WifiOff, RefreshCw, Download, Search, BookOpen, Layers } from 'lucide-react';
 import { CategoryId, GameMode, UserProfile } from '../types';
-import { AVATARS, CATEGORIES, QUESTIONS } from '../data/questions';
+import { AVATARS, CATEGORIES, QUESTIONS, getCategoryQuestionStats, resetCategoryQuestionProgress } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import { useOnline } from '../context/OnlineContext';
 import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
@@ -36,10 +36,13 @@ export const Home: React.FC<HomeProps> = ({
   const [tempName, setTempName] = useState(currentUser);
   const [tempAvatar, setTempAvatar] = useState(userProfile.av);
   const [searchTerm, setSearchTerm] = useState('');
+  const [forceRefresh, setForceRefresh] = useState(0);
   const { user, token, loginWithGoogle, logout } = useAuth();
   const { isOnline, pendingGamesCount, syncPendingGames } = useOnline();
   const [isSyncing, setIsSyncing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  const catStats = getCategoryQuestionStats(selectedCat, currentUser);
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
@@ -77,6 +80,10 @@ export const Home: React.FC<HomeProps> = ({
   const allCategoryKeys = (Object.keys(CATEGORIES) as CategoryId[]).sort((a, b) => {
     if (a === 'todas') return -1;
     if (b === 'todas') return 1;
+    if (a === 'historia_angola') return -1;
+    if (b === 'historia_angola') return 1;
+    if (a === 'futebol') return -1;
+    if (b === 'futebol') return 1;
     return (CATEGORIES[a]?.label || '').localeCompare(CATEGORIES[b]?.label || '', 'pt');
   });
   const filteredCategoryKeys = allCategoryKeys.filter((catKey) => {
@@ -254,6 +261,17 @@ export const Home: React.FC<HomeProps> = ({
           <span className="text-[#a78bca] text-[8px] uppercase font-semibold shrink-0">Destaques:</span>
           <button
             type="button"
+            onClick={() => onSelectCat('historia_angola')}
+            className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
+              selectedCat === 'historia_angola'
+                ? 'bg-[#ef4444] text-white border-[#ef4444] shadow-sm'
+                : 'bg-[#ef4444]/20 text-[#f87171] border-[#ef4444]/50 hover:bg-[#ef4444]/35'
+            }`}
+          >
+            🇦🇴 História de Angola
+          </button>
+          <button
+            type="button"
             onClick={() => onSelectCat('futebol')}
             className={`px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 font-bold transition-all cursor-pointer ${
               selectedCat === 'futebol'
@@ -315,6 +333,7 @@ export const Home: React.FC<HomeProps> = ({
           {filteredCategoryKeys.map((catKey) => {
             const cat = CATEGORIES[catKey];
             const isSelected = selectedCat === catKey;
+            const isNew = catKey === 'historia_angola' || catKey === 'futebol';
             return (
               <button
                 key={catKey}
@@ -322,12 +341,19 @@ export const Home: React.FC<HomeProps> = ({
                 className={`p-1 rounded-lg border text-left transition-all duration-150 cursor-pointer flex items-center gap-1 h-8 relative overflow-hidden ${
                   isSelected
                     ? 'border-[#c084fc] bg-[#240847] shadow-sm ring-1 ring-[#c084fc]/60'
+                    : isNew
+                    ? 'border-[#34d399]/60 bg-[#064e3b]/30 hover:bg-[#064e3b]/50'
                     : 'border-[#c084fc]/20 bg-[#1a0533] hover:bg-[#1f073d]'
                 }`}
               >
+                {isNew && (
+                  <span className="absolute top-0.5 right-0.5 px-1 py-[0.5px] rounded bg-[#34d399] text-[#000] text-[6.5px] font-extrabold uppercase leading-none tracking-tight">
+                    NOVO
+                  </span>
+                )}
                 <span className="text-xs shrink-0">{cat.icon}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="font-syne font-bold text-[8.5px] text-[#f5f0ff] truncate leading-tight">
+                  <div className="font-syne font-bold text-[8.5px] text-[#f5f0ff] truncate leading-tight pr-3">
                     {cat.label}
                   </div>
                   <div className="text-[7.5px] text-[#34d399] font-medium truncate">
@@ -411,6 +437,30 @@ export const Home: React.FC<HomeProps> = ({
             <span className="text-[8.5px] font-semibold">Multiplayer</span>
           </button>
         </div>
+      </div>
+
+      {/* Non-repetition status banner */}
+      <div className="shrink-0 flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#1a0533] border border-[#34d399]/30 text-[9.5px]">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse shrink-0" />
+          <span className="text-[#34d399] font-bold">Sem repetições ativo</span>
+          <span className="text-[#a78bca]">
+            ({catStats.seenCount}/{catStats.totalCount} respondidas)
+          </span>
+        </div>
+        {catStats.seenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              resetCategoryQuestionProgress(selectedCat, currentUser);
+              setForceRefresh((prev) => prev + 1);
+            }}
+            className="text-[8.5px] text-[#c084fc] hover:underline cursor-pointer font-medium"
+            title="Reiniciar histórico de perguntas desta disciplina"
+          >
+            Reiniciar
+          </button>
+        )}
       </div>
 
       {/* Start Button */}

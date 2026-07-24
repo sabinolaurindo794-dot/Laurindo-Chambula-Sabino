@@ -123,7 +123,7 @@ export default function App() {
     if (selectedMode === 'multi') {
       setActiveScreen('multi-lobby');
     } else {
-      const qList = getRandomQuestions(selectedCat, questionCount);
+      const qList = getRandomQuestions(selectedCat, questionCount, currentUser);
       setActiveQuestions(qList);
       setActiveScreen('quiz');
     }
@@ -132,7 +132,7 @@ export default function App() {
   // Start multiplayer quiz from lobby
   const handleStartMultiGame = (oppName: string) => {
     setOpponentName(oppName);
-    const qList = getRandomQuestions(selectedCat, questionCount);
+    const qList = getRandomQuestions(selectedCat, questionCount, currentUser);
     setActiveQuestions(qList);
     setActiveScreen('quiz');
   };
