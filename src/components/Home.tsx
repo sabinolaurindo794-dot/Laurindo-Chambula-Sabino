@@ -95,7 +95,7 @@ export const Home: React.FC<HomeProps> = ({
   const userIq = getIQProfile(userProfile.totalCorrect || 0, userProfile.totalAnswered || 0);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-3.5rem)] pt-1 pb-1 px-3 max-w-md mx-auto w-full relative z-10 text-xs select-none overflow-hidden gap-1 justify-between">
+    <div className="flex flex-col min-h-screen pt-2 pb-24 px-3.5 max-w-md mx-auto w-full relative z-10 text-xs select-none space-y-2.5 overflow-y-auto">
       {/* Top Header Bar */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -377,7 +377,7 @@ export const Home: React.FC<HomeProps> = ({
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-3 gap-1 overflow-y-auto flex-1 min-h-0 pr-0.5 scrollbar-thin scrollbar-thumb-[#c084fc]/30 scrollbar-track-transparent">
+        <div className="grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-0.5 scrollbar-thin scrollbar-thumb-[#c084fc]/30 scrollbar-track-transparent">
           {filteredCategoryKeys.map((catKey) => {
             const cat = CATEGORIES[catKey];
             const isSelected = selectedCat === catKey;
@@ -490,9 +490,12 @@ export const Home: React.FC<HomeProps> = ({
       {/* Start Button */}
       <button
         onClick={onStartGame}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-[#c084fc] to-[#7c3aed] text-white font-syne font-bold text-xs shadow-md shadow-[#7c3aed]/25 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer shrink-0"
+        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c084fc] via-[#a855f7] to-[#7c3aed] text-white font-syne font-extrabold text-sm shadow-lg shadow-[#7c3aed]/35 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer shrink-0 mt-2 flex items-center justify-center gap-2 border border-[#f0abfc]/30"
       >
-        {selectedMode === 'multi' ? 'Criar / Entrar em Sala' : `Iniciar Quiz (${questionCount} Perguntas)`}
+        <Sparkles size={16} className="text-[#fbbf24] animate-pulse" />
+        <span>
+          {selectedMode === 'multi' ? 'Criar / Entrar em Sala' : `Iniciar Quiz (${questionCount} Perguntas)`}
+        </span>
       </button>
 
       {/* Edit Profile Modal */}
