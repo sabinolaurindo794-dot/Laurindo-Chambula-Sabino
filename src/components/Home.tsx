@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Edit2, Sparkles, Target, Timer, Users, LogIn, LogOut, Wifi, WifiOff, RefreshCw, Download, Search } from 'lucide-react';
+import { Edit2, Sparkles, Target, Timer, Users, LogIn, LogOut, Wifi, WifiOff, RefreshCw, Download, Search, Brain } from 'lucide-react';
 import { CategoryId, GameMode, UserProfile } from '../types';
 import { AVATARS, CATEGORIES } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import { useOnline } from '../context/OnlineContext';
+import { getIQProfile } from '../utils/iq';
 import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
 
 interface HomeProps {
@@ -37,7 +38,7 @@ export const Home: React.FC<HomeProps> = ({
   const [tempAvatar, setTempAvatar] = useState(userProfile.av);
   const [searchTerm, setSearchTerm] = useState('');
   const { user, token, loginWithGoogle, logout } = useAuth();
-  const { isOnline, pendingGamesCount, syncPendingGames } = useOnline();
+  const { isOnline, pendingGamesCount, syncPendingGames, toggleOnlineMode } = useOnline();
   const [isSyncing, setIsSyncing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
@@ -91,6 +92,8 @@ export const Home: React.FC<HomeProps> = ({
 
   const totalDisciplines = allCategoryKeys.length - 1;
 
+  const userIq = getIQProfile(userProfile.totalCorrect || 0, userProfile.totalAnswered || 0);
+
   return (
     <div className="flex flex-col h-[calc(100dvh-3.5rem)] pt-1 pb-1 px-3 max-w-md mx-auto w-full relative z-10 text-xs select-none overflow-hidden gap-1 justify-between">
       {/* Top Header Bar */}
@@ -113,16 +116,18 @@ export const Home: React.FC<HomeProps> = ({
               <h1 className="font-syne text-base font-extrabold tracking-tight bg-gradient-to-r from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-none">
                 LauQuiz
               </h1>
-              <span
-                className={`px-1.5 py-0.2 rounded-full text-[8px] font-semibold flex items-center gap-0.5 ${
+              <button
+                onClick={toggleOnlineMode}
+                title="Clique para alternar entre Modo Online e Modo Offline"
+                className={`px-1.5 py-0.2 rounded-full text-[8px] font-semibold flex items-center gap-0.5 cursor-pointer transition-all hover:scale-105 active:scale-95 ${
                   isOnline
-                    ? 'bg-[#10b981]/20 text-[#34d399] border border-[#10b981]/30'
-                    : 'bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30 animate-pulse'
+                    ? 'bg-[#10b981]/20 text-[#34d399] border border-[#10b981]/30 hover:bg-[#10b981]/30'
+                    : 'bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30 animate-pulse hover:bg-[#f59e0b]/30'
                 }`}
               >
                 {isOnline ? <Wifi size={8} /> : <WifiOff size={8} />}
                 {isOnline ? 'Online' : 'Offline'}
-              </span>
+              </button>
             </div>
             <p className="text-[9px] text-[#a78bca] truncate">
               {user ? user.email : 'Sincronização SQL ativa'}
@@ -152,57 +157,124 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </motion.div>
 
-      {/* Profile Bar */}
+      {/* Profile & IQ Bar */}
       <motion.div
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2 px-2.5 py-1 bg-[#120324] rounded-lg border border-[#c084fc]/15 shrink-0"
+        className="flex items-center gap-2 px-2.5 py-1.5 bg-[#120324] rounded-lg border border-[#c084fc]/20 shrink-0 justify-between"
       >
-        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#c084fc] to-[#7c3aed] flex items-center justify-center text-[10px] shrink-0 shadow-inner">
-          {userProfile.av}
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#c084fc] to-[#7c3aed] flex items-center justify-center text-[11px] shrink-0 shadow-inner border border-[#c084fc]/30">
+            {userProfile.av}
+          </div>
+          <div className="min-w-0 flex flex-col">
+            <span className="font-syne font-bold text-[11px] text-[#f5f0ff] truncate leading-tight">
+              {currentUser}
+            </span>
+            <span className="text-[9px] text-[#a78bca]">
+              {userProfile.games} partidas jogadas · {userProfile.points} pts
+            </span>
+          </div>
         </div>
-        <div className="flex-1 min-w-0 flex items-center justify-between">
-          <span className="font-syne font-bold text-[11px] text-[#f5f0ff] truncate">
-            {currentUser}
-          </span>
-          <span className="text-[9px] text-[#a78bca]">
-            {userProfile.games} partidas jogadas
-          </span>
-        </div>
+
         <button
           onClick={() => {
             setTempName(currentUser);
             setTempAvatar(userProfile.av);
             setIsEditing(true);
           }}
-          className="p-1 rounded bg-[#240847] hover:bg-[#320c61] text-[#c084fc] transition-colors cursor-pointer"
+          className="p-1 rounded bg-[#240847] hover:bg-[#320c61] text-[#c084fc] transition-colors cursor-pointer shrink-0"
           title="Editar Perfil"
         >
           <Edit2 size={10} />
         </button>
       </motion.div>
 
+      {/* Painel de Precisão e Tipo de QI */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="shrink-0 p-2.5 rounded-xl bg-gradient-to-r from-[#1e0736] via-[#140428] to-[#250847] border border-[#c084fc]/30 shadow-md flex flex-col gap-1.5"
+      >
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1.5">
+            <Brain size={13} className="text-[#c084fc]" />
+            <span className="font-syne font-extrabold text-[10px] text-[#f5f0ff] uppercase tracking-wide">
+              Módulo de QI & Precisão
+            </span>
+          </div>
+          <span className={`px-2 py-0.5 rounded-md text-[9.5px] font-syne font-extrabold border ${userIq.badgeBg}`}>
+            {userIq.icon} {userIq.label} (~{userIq.score})
+          </span>
+        </div>
+
+        {/* Accuracy Progress Bar */}
+        <div className="space-y-1">
+          <div className="flex justify-between items-center text-[9px]">
+            <span className="text-[#a78bca] font-medium flex items-center gap-1">
+              <Target size={10} className="text-[#34d399]" />
+              Precisão de Respostas:
+            </span>
+            <span className="font-syne font-bold text-[#34d399]">
+              {userProfile.totalAnswered ? userIq.accuracy : 0}% ({userProfile.totalCorrect || 0}/{userProfile.totalAnswered || 0})
+            </span>
+          </div>
+
+          <div className="w-full h-1.5 bg-[#0d0118] rounded-full overflow-hidden border border-[#34d399]/25">
+            <div
+              className="h-full bg-gradient-to-r from-[#10b981] to-[#34d399] transition-all duration-300"
+              style={{ width: `${userProfile.totalAnswered ? userIq.accuracy : 0}%` }}
+            />
+          </div>
+        </div>
+
+        <p className="text-[8.5px] text-[#a78bca] italic leading-tight">
+          "{userIq.description}"
+        </p>
+      </motion.div>
+
       {/* Inline Banner Notice (Offline / Pending / PWA) */}
       {!isOnline && (
-        <div className="px-2 py-0.5 bg-[#f59e0b]/15 border border-[#f59e0b]/30 rounded-lg text-[9px] text-[#fef08a] flex items-center gap-1.5 shrink-0">
-          <WifiOff size={10} className="shrink-0 text-[#fbbf24]" />
-          <span className="truncate">Modo Offline · Pontos guardados localmente</span>
+        <div className="px-2.5 py-1 bg-[#f59e0b]/15 border border-[#f59e0b]/30 rounded-lg text-[9.5px] text-[#fef08a] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <WifiOff size={11} className="shrink-0 text-[#fbbf24]" />
+            <span className="truncate font-medium">Modo Offline ativo · Pontos e QI salvos localmente</span>
+          </div>
+          <button
+            onClick={toggleOnlineMode}
+            className="px-2 py-0.5 rounded bg-[#f59e0b] text-[#120324] font-bold text-[8.5px] hover:brightness-110 cursor-pointer shrink-0 ml-1"
+          >
+            Ativar Online
+          </button>
         </div>
       )}
 
-      {isOnline && pendingGamesCount > 0 && (
-        <div className="px-2 py-0.5 bg-[#c084fc]/15 border border-[#c084fc]/30 rounded-lg text-[9px] text-[#f5f0ff] flex items-center justify-between shrink-0">
-          <span className="flex items-center gap-1">
-            <RefreshCw size={9} className={`text-[#c084fc] ${isSyncing ? 'animate-spin' : ''}`} />
-            <strong>{pendingGamesCount}</strong> offline
-          </span>
-          <button
-            onClick={handleManualSync}
-            disabled={isSyncing || !token}
-            className="px-2 py-0.5 rounded bg-[#c084fc] text-white text-[8px] font-bold cursor-pointer"
-          >
-            Sincronizar
-          </button>
+      {isOnline && (
+        <div className="px-2.5 py-1 bg-[#10b981]/10 border border-[#10b981]/25 rounded-lg text-[9.5px] text-[#34d399] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Wifi size={11} className="shrink-0 text-[#34d399]" />
+            <span className="truncate font-medium">
+              Modo Online ativo {pendingGamesCount > 0 ? `· ${pendingGamesCount} partida(s) pendente(s)` : '· Sincronização em tempo real'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 shrink-0 ml-1">
+            {pendingGamesCount > 0 && (
+              <button
+                onClick={handleManualSync}
+                disabled={isSyncing || !token}
+                className="px-2 py-0.5 rounded bg-[#34d399] text-[#0d0118] font-bold text-[8.5px] hover:brightness-110 cursor-pointer flex items-center gap-1"
+              >
+                <RefreshCw size={8} className={isSyncing ? 'animate-spin' : ''} />
+                Sincronizar
+              </button>
+            )}
+            <button
+              onClick={toggleOnlineMode}
+              className="px-1.5 py-0.5 rounded bg-[#240847] border border-[#c084fc]/30 text-[#e9d5ff] font-medium text-[8px] hover:bg-[#320c61] cursor-pointer"
+            >
+              Usar Offline
+            </button>
+          </div>
         </div>
       )}
 

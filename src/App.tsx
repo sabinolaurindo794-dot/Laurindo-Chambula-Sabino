@@ -15,9 +15,9 @@ const STORAGE_USERS_KEY = 'lauquiz_users';
 const STORAGE_CURRENT_KEY = 'lauquiz_current';
 
 const INITIAL_DEMO_USERS: UserDatabase = {
-  'MárioFilósofo': { av: '🔮', points: 1450, games: 12, best: 1200 },
-  'LiaCiência': { av: '🐬', points: 1100, games: 8, best: 950 },
-  'PedroHistória': { av: '🦅', points: 880, games: 6, best: 800 },
+  'MárioFilósofo': { av: '🔮', points: 1450, games: 12, best: 1200, totalCorrect: 108, totalAnswered: 120 },
+  'LiaCiência': { av: '🐬', points: 1100, games: 8, best: 950, totalCorrect: 66, totalAnswered: 80 },
+  'PedroHistória': { av: '🦅', points: 880, games: 6, best: 800, totalCorrect: 42, totalAnswered: 60 },
 };
 
 export default function App() {
@@ -70,7 +70,7 @@ export default function App() {
       const randomAv = AVATARS[Math.floor(Math.random() * AVATARS.length)];
       const updated = {
         ...users,
-        [currentUser]: { av: randomAv, points: 0, games: 0, best: 0 },
+        [currentUser]: { av: randomAv, points: 0, games: 0, best: 0, totalCorrect: 0, totalAnswered: 0 },
       };
       setUsers(updated);
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(updated));
@@ -166,13 +166,19 @@ export default function App() {
       points: 0,
       games: 0,
       best: 0,
+      totalCorrect: 0,
+      totalAnswered: 0,
     };
+
+    const roundAnswered = stats.correct + stats.wrong;
 
     const updatedProfile = {
       ...currentProfile,
       points: currentProfile.points + stats.points,
       games: currentProfile.games + 1,
       best: Math.max(currentProfile.best, stats.points),
+      totalCorrect: (currentProfile.totalCorrect || 0) + stats.correct,
+      totalAnswered: (currentProfile.totalAnswered || 0) + roundAnswered,
     };
 
     const updatedUsers = {

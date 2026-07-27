@@ -42,6 +42,8 @@ export interface UserProfile {
   points: number;
   games: number;
   best: number;
+  totalCorrect?: number;
+  totalAnswered?: number;
 }
 
 export interface UserDatabase {

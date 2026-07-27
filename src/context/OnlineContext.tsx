@@ -13,6 +13,7 @@ interface PendingGame {
 interface OnlineContextType {
   isOnline: boolean;
   pendingGamesCount: number;
+  toggleOnlineMode: () => void;
   queueOfflineGame: (gameData: Omit<PendingGame, 'id' | 'timestamp'>) => void;
   syncPendingGames: (token?: string | null) => Promise<number>;
 }
@@ -115,11 +116,16 @@ export function OnlineProvider({ children }: { children: ReactNode }) {
     return syncedCount;
   };
 
+  const toggleOnlineMode = () => {
+    setIsOnline((prev) => !prev);
+  };
+
   return (
     <OnlineContext.Provider
       value={{
         isOnline,
         pendingGamesCount: pendingGames.length,
+        toggleOnlineMode,
         queueOfflineGame,
         syncPendingGames,
       }}
