@@ -6,6 +6,7 @@ import { AVATARS, CATEGORIES } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import { useOnline } from '../context/OnlineContext';
 import { getIQProfile } from '../utils/iq';
+import { soundEngine } from '../utils/audio';
 import gameIcon from '../assets/images/game_icon_1784815977845.jpg';
 
 interface HomeProps {
@@ -106,7 +107,7 @@ export const Home: React.FC<HomeProps> = ({
           <div className="w-8 h-8 rounded-lg bg-[#0d0118] p-0.5 border border-[#c084fc]/30 shrink-0">
             <img
               src={gameIcon}
-              alt="LauQuiz Icon"
+              alt="EidQuiz Icon"
               className="w-full h-full object-cover rounded-md"
               referrerPolicy="no-referrer"
             />
@@ -114,7 +115,7 @@ export const Home: React.FC<HomeProps> = ({
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <h1 className="font-syne text-base font-extrabold tracking-tight bg-gradient-to-r from-[#c084fc] via-[#f0abfc] to-[#fbbf24] bg-clip-text text-transparent leading-none">
-                LauQuiz
+                EidQuiz
               </h1>
               <button
                 onClick={toggleOnlineMode}
@@ -399,7 +400,7 @@ export const Home: React.FC<HomeProps> = ({
                     NOVO
                   </span>
                 )}
-                <span className="text-xs shrink-0">{cat.icon}</span>
+                {cat.icon && <span className="text-xs shrink-0">{cat.icon}</span>}
                 <div className="min-w-0 flex-1">
                   <div className="font-syne font-bold text-[8.5px] text-[#f5f0ff] truncate leading-tight pr-3">
                     {cat.label}
@@ -489,7 +490,10 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* Start Button */}
       <button
-        onClick={onStartGame}
+        onClick={() => {
+          soundEngine.speakWelcome('Bem-vindo ao EidQuiz!');
+          onStartGame();
+        }}
         className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c084fc] via-[#a855f7] to-[#7c3aed] text-white font-syne font-extrabold text-sm shadow-lg shadow-[#7c3aed]/35 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer shrink-0 mt-2 flex items-center justify-center gap-2 border border-[#f0abfc]/30"
       >
         <Sparkles size={16} className="text-[#fbbf24] animate-pulse" />

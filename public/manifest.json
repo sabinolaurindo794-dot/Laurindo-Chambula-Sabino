@@ -1,6 +1,6 @@
 {
-  "name": "LauQuiz - Trivia e Cultura Geral",
-  "short_name": "LauQuiz",
+  "name": "EidQuiz - Trivia e Cultura Geral",
+  "short_name": "EidQuiz",
   "description": "Desafie os seus conhecimentos online ou offline em qualquer lugar!",
   "start_url": "/",
   "display": "standalone",
