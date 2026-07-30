@@ -11,7 +11,6 @@ interface SplashProps {
 
 export const Splash: React.FC<SplashProps> = ({ onStart, onShowRanking }) => {
   const handleStart = () => {
-    soundEngine.speakWelcome('Bem-vindo ao EidQuiz!');
     onStart();
   };
   return (

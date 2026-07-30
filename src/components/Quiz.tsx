@@ -42,11 +42,6 @@ export const Quiz: React.FC<QuizProps> = ({
   const letters = ['A', 'B', 'C', 'D'];
   const catConfig = CATEGORIES[currentQ?.cat] || CATEGORIES.todas;
 
-  // Speak female voice welcome greeting when starting to play
-  useEffect(() => {
-    soundEngine.speakWelcome('Bem-vindo ao EidQuiz!');
-  }, []);
-
   // Reflection sound during question reflection phase
   useEffect(() => {
     if (!isAnswered) {

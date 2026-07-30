@@ -490,10 +490,7 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* Start Button */}
       <button
-        onClick={() => {
-          soundEngine.speakWelcome('Bem-vindo ao EidQuiz!');
-          onStartGame();
-        }}
+        onClick={onStartGame}
         className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c084fc] via-[#a855f7] to-[#7c3aed] text-white font-syne font-extrabold text-sm shadow-lg shadow-[#7c3aed]/35 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer shrink-0 mt-2 flex items-center justify-center gap-2 border border-[#f0abfc]/30"
       >
         <Sparkles size={16} className="text-[#fbbf24] animate-pulse" />

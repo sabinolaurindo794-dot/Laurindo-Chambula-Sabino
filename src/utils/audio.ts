@@ -146,57 +146,15 @@ class SoundEngine {
     }
   }
 
-  // Speak female voice welcome greeting "Bem-vindo ao EidQuiz!"
-  public speakWelcome(text: string = 'Bem-vindo ao EidQuiz!') {
-    if (this.isMuted || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-
-    try {
-      this.getContext();
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
+  // Speak female voice welcome greeting (disabled as requested)
+  public speakWelcome(_text: string = '') {
+    // Welcome voice greeting removed per user request
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        // ignore
       }
-      window.speechSynthesis.cancel(); // Cancel any ongoing speech
-
-      const speak = () => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-PT';
-        utterance.rate = 0.95;
-        utterance.pitch = 1.35; // Higher warm female pitch
-
-        const voices = window.speechSynthesis.getVoices();
-        
-        // Priority for Portuguese female voice
-        const ptVoices = voices.filter(v => v.lang.toLowerCase().startsWith('pt'));
-        const femaleVoice = ptVoices.find(v => 
-          /female|feminina|luciana|joana|francisca|helena|fernanda|maria|victoria|racquel|camila|soraia|marcia|siri|google/i.test(v.name)
-        ) || ptVoices.find(v => !/male|masculino|ricardo|george|felipe|daniel|diego|bruno/i.test(v.name)) 
-          || voices.find(v => /female|feminina|samantha|victoria|karen|zira/i.test(v.name))
-          || ptVoices[0] 
-          || voices[0];
-
-        if (femaleVoice) {
-          utterance.voice = femaleVoice;
-        }
-
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-        window.speechSynthesis.speak(utterance);
-      };
-
-      const voices = window.speechSynthesis.getVoices();
-      if (!voices || voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          speak();
-          window.speechSynthesis.onvoiceschanged = null;
-        };
-        // Fallback speak call after short timeout in case onvoiceschanged does not fire
-        setTimeout(() => speak(), 250);
-      } else {
-        speak();
-      }
-    } catch (e) {
-      console.warn('Speech synthesis error:', e);
     }
   }
 }
