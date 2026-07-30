@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lauquiz-pwa-v1';
+const CACHE_NAME = 'eidquiz-pwa-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[LauQuiz SW] Precaching static shell');
+      console.log('[EidQuiz SW] Precaching static shell');
       return cache.addAll(STATIC_ASSETS);
     }).then(() => self.skipWaiting())
   );
@@ -22,7 +22,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('[LauQuiz SW] Clearing old cache:', cache);
+            console.log('[EidQuiz SW] Clearing old cache:', cache);
             return caches.delete(cache);
           }
         })

@@ -18,7 +18,7 @@ interface OnlineContextType {
   syncPendingGames: (token?: string | null) => Promise<number>;
 }
 
-const STORAGE_PENDING_GAMES = 'lauquiz_pending_games';
+const STORAGE_PENDING_GAMES = 'eidquiz_pending_games';
 
 const OnlineContext = createContext<OnlineContextType | undefined>(undefined);
 
@@ -26,7 +26,7 @@ export function OnlineProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [pendingGames, setPendingGames] = useState<PendingGame[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_PENDING_GAMES);
+      const saved = localStorage.getItem(STORAGE_PENDING_GAMES) || localStorage.getItem('lauquiz_pending_games');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -42,13 +42,11 @@ export function OnlineProvider({ children }: { children: ReactNode }) {
     window.addEventListener('offline', handleOffline);
 
     // Register Service Worker
-    if ('serviceWorker' in navigator && process.env.NODE_ENV !== 'development') {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').then(
-        (reg) => console.log('[LauQuiz PWA] Service Worker registrado com sucesso:', reg.scope),
-        (err) => console.warn('[LauQuiz PWA] Erro ao registrar Service Worker:', err)
+        (reg) => console.log('[EidQuiz PWA] Service Worker registrado com sucesso:', reg.scope),
+        (err) => console.warn('[EidQuiz PWA] Erro ao registrar Service Worker:', err)
       );
-    } else if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
     return () => {

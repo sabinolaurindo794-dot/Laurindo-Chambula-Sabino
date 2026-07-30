@@ -11,8 +11,8 @@ import { NavBar } from './components/NavBar';
 import { useAuth } from './context/AuthContext';
 import { useOnline } from './context/OnlineContext';
 
-const STORAGE_USERS_KEY = 'lauquiz_users';
-const STORAGE_CURRENT_KEY = 'lauquiz_current';
+const STORAGE_USERS_KEY = 'eidquiz_users';
+const STORAGE_CURRENT_KEY = 'eidquiz_current';
 
 const INITIAL_DEMO_USERS: UserDatabase = {
   'MárioFilósofo': { av: '🔮', points: 1450, games: 12, best: 1200, totalCorrect: 108, totalAnswered: 120 },
@@ -25,7 +25,7 @@ export default function App() {
   const { isOnline, queueOfflineGame, syncPendingGames } = useOnline();
   const [users, setUsers] = useState<UserDatabase>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_USERS_KEY);
+      const saved = localStorage.getItem(STORAGE_USERS_KEY) || localStorage.getItem('lauquiz_users');
       if (saved) return JSON.parse(saved);
     } catch {
       // fallback
@@ -35,7 +35,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState<string>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_CURRENT_KEY);
+      const saved = localStorage.getItem(STORAGE_CURRENT_KEY) || localStorage.getItem('lauquiz_current');
       if (saved && users[saved]) return saved;
     } catch {
       // fallback
